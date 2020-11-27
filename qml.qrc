@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>StartPage.qml</file>
+        <file>GameAreaGrid.qml</file>
+        <file>GameAreaItem.qml</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>res/blue.png</file>
+        <file>res/cyan.png</file>
+        <file>res/green.png</file>
+        <file>res/purple.png</file>
+        <file>res/red.png</file>
+        <file>res/yellow.png</file>
+    </qresource>
+</RCC>
