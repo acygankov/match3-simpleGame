@@ -46,10 +46,10 @@ Item {
         itemImage.source = itemImagesMap[type]
     }
 
-    //Swap items method
-    function destroyItem() {
+    //Destroy items method
+    function destroyItem(isDelayed) {
+        if(isDelayed) destroyPause.duration = 2000
         destroyAnimation.start()
-        particles.burst(50)
     }
 
     //Swap items method
@@ -76,6 +76,11 @@ Item {
             parent.onItemSwapCompleted(itemGridIndex)
     }
 
+    //Destroy completed signal handler
+    function onDestroyCompleted() {
+        parent.onItemDestroyed()
+    }
+
     //Click signal passing
     function sendClickIndex() {
         parent.onAreaItemClicked(itemGridIndex)
@@ -99,8 +104,7 @@ Item {
     //Drop and spawn animaton
     Behavior on y {
         enabled: isDropActive
-        SpringAnimation { spring: 1; damping: 0.3 }
-
+            SpringAnimation { spring: 1; damping: 0.3 }
     }
 
     //Swap animatons
@@ -139,16 +143,23 @@ Item {
         }
         ScriptAction {
             script: swapCompleted(true)
-
         }
     }
 
     //Destroy animaton
-    Behavior on opacity{ NumberAnimation { duration: 300 } }
+    Behavior on opacity{ NumberAnimation { duration: 500 } }
 
     SequentialAnimation
     {
         id: destroyAnimation
+        //Delay before other remove lines start
+        PauseAnimation {
+            id: destroyPause
+            duration: 0
+        }
+        ScriptAction {
+            script: particles.burst(50)
+        }
         ScriptAction {
             script: root.opacity = 0
         }
@@ -156,15 +167,17 @@ Item {
             target: root;
             property: "scale";
             to: 1.5
-            duration: 800
+            duration: 500
         }
         ScriptAction {
             script:  {
+                onDestroyCompleted()
                 root.destroy()
             }
         }
     }
 
+    //Item destroy particles
     ParticleSystem {
         id: itemParticle
         anchors.centerIn: parent
@@ -178,7 +191,7 @@ Item {
             anchors.centerIn: parent
             emitRate: 0
             lifeSpan: 1000
-            velocity: AngleDirection {angleVariation: 180; magnitude: itemRect.width * 1.6; magnitudeVariation: itemRect.width * 1.2}
+            velocity: AngleDirection {angleVariation: 180; magnitude: itemRect.width * 1; magnitudeVariation: itemRect.width * 0.8}
             size: 16
         }
     }

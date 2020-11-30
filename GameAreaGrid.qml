@@ -4,9 +4,13 @@ import QtGraphicalEffects 1.12
 Item {
     id: root
 
-    property var areaItemsList: []
-    property var itemActionsQueueList: []
     property int minSideSize: (width > height) ? height : width
+
+    property var areaItemsList: []
+
+    property var itemActionsQueueList: []
+    property int itemRemovesActiveCount: 0
+    property bool isFirstRemoveInSequence: true
 
     property int selectedIndex: -1
 
@@ -18,6 +22,7 @@ Item {
 
     property var areaItemComponent: Qt.createComponent("GameAreaItem.qml")
 
+    //Init item object and parameters
     function createAreaItem(itemIndex) {
         var itemObject = areaItemComponent.createObject(root)
         itemObject.isDropActive = true
@@ -37,7 +42,6 @@ Item {
         }
     }
 
-
     //Delete and free item objects
     function destroyItemsList() {
         for (var i = 0; i < areaItemsList.length; i++) {
@@ -45,8 +49,10 @@ Item {
         }
     }
 
-    function onItemMovedOrAdded() {
-
+    //Destroyed items counter and processAction call at empty
+    function onItemDestroyed() {
+        if(itemRemovesActiveCount > 0) itemRemovesActiveCount--
+        if(itemRemovesActiveCount === 0) processActionQueue()
     }
 
     //Process item actions queue
@@ -59,21 +65,37 @@ Item {
                 swapItems(currentAction[1], currentAction[2])
                 return;
             case 'remove':
-                areaItemsList[currentAction[1]].destroyItem()
-                break;
+                //Remove items at only removes counter empty
+                //Remove all items before other actions
+                //Add remove delay to not the first remove cycle
+                if(itemRemovesActiveCount === 0) {
+                    while(true) {
+                        areaItemsList[currentAction[1]].destroyItem(!isFirstRemoveInSequence)
+                        itemRemovesActiveCount++
+                        if(itemActionsQueueList.length >= 3) {
+                            currentAction = itemActionsQueueList.slice(0, 3)
+                            if(currentAction[0] === "remove") itemActionsQueueList = itemActionsQueueList.slice(3)
+                            else break
+                        }
+                        else break
+                    }
+                    isFirstRemoveInSequence = false
+                }
+                return
             case 'move':
                 areaItemsList[currentAction[1]] = areaItemsList[currentAction[2]]
                 areaItemsList[currentAction[1]].isDropActive = true
                 areaItemsList[currentAction[1]].itemGridIndex = currentAction[1]
-                break;
+                break
             case 'add':
                 areaItemsList[currentAction[1]] = createAreaItem(currentAction[1])
                 areaItemsList[currentAction[1]].setItemType(currentAction[2])
-                break;
+                break
             default:
-                break;
+                break
             }
         }
+
         if(!gameAreaModel.checkMoveIsAvailable()) {
             isGameOver = true
             isActionsLocked = true
@@ -81,6 +103,7 @@ Item {
         else {
             isActionsLocked = false
         }
+        isFirstRemoveInSequence = true
     }
 
     //Swap items function in items list

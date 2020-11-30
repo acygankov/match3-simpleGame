@@ -20,9 +20,9 @@ Window {
     Settings {
         id: settings
 
-        property bool isLetterEnabled: false
-        property bool isSatIncEnabled: false
-        property int currentDimension: 5
+        property bool isLetterEnabled
+        property bool isSatIncEnabled
+        property int currentDimension
     }
 
     SwipeView {

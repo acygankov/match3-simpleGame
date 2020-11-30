@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QIcon>
 
 #include "gamearea.h"
 
@@ -11,7 +12,8 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     app.setOrganizationName("CraftplaceMS");
     app.setOrganizationDomain("craftplace.msgmail.com");
-    app.setApplicationName("Match-3 Game v0.12.9888881");
+    app.setApplicationName("Match-3 Game");
+    app.setWindowIcon(QIcon(":/images/res/red.png"));
 
     qmlRegisterType<GameArea>("Match3", 1, 0, "GameArea");
 
