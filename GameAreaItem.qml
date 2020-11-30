@@ -14,6 +14,8 @@ Item {
     property bool isChosen: false
     property bool isBindingYActive: false
 
+    property var currentType: 'red'
+
     //Type to imageFile map
     readonly property variant itemImagesMap: {
         'red': 'images/res/red.png',
@@ -40,6 +42,7 @@ Item {
 
     //Passing itemType to itemElement
     function setItemType(type) {
+        currentType = type
         itemImage.source = itemImagesMap[type]
     }
 
@@ -219,7 +222,7 @@ Item {
     Rectangle {
         id: itemRect
         anchors.fill: parent
-        color: "#00000000"
+        color: "transparent"
 
         //CropCircleRectagle
         Rectangle {
@@ -229,7 +232,7 @@ Item {
             radius: width / 2
             anchors.centerIn: parent
             clip: true
-            color: "#00000000"
+            color: "transparent"
             MouseArea {
                 anchors.fill: parent
                 onClicked:  {
@@ -247,6 +250,26 @@ Item {
 
                 fillMode: Image.PreserveAspectFit
                 mipmap: true
+
+                //CircleTypeLetter
+                Text {
+                    anchors.centerIn: parent
+                    font.pixelSize: parent.width / 3
+                    font.bold: true
+                    style: Text.Outline
+                    styleColor: "black"
+                    color: "white"
+                    text: currentType.charAt(0)
+                    visible: root.parent.isLetterEnabled
+                }
+            }
+
+            //Saturation increase effect
+            HueSaturation {
+                anchors.fill: itemImage
+                source: itemImage
+                saturation: 1
+                visible: root.parent.isSatIncEnabled
             }
         }
     }

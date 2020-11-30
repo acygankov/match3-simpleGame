@@ -13,6 +13,9 @@ Item {
     property bool isActionsLocked: false
     property bool isGameOver: false
 
+    property bool isLetterEnabled: false
+    property bool isSatIncEnabled: false
+
     property var areaItemComponent: Qt.createComponent("GameAreaItem.qml")
 
     function createAreaItem(itemIndex) {
